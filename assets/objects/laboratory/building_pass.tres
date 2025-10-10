@@ -35,4 +35,3 @@ _surfaces = [{
 }]
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_ajtgr")
-metadata/object = &"building_card"

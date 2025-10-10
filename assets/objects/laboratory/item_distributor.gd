@@ -1,6 +1,7 @@
 extends Node3D
 
-@export var item_mesh:Mesh = null
+@export var item_mesh:PackedScene = null
+var mesh_instance:MeshInstance3D = null
 @export var dialog_timeline: Resource = null
 @export var jump_to_label: String = "OnDefault"
 
@@ -11,9 +12,8 @@ func _ready():
 	$AreaDialogue.dialog_timeline = dialog_timeline
 	$AreaDialogue.jump_to_label = jump_to_label
 	
-	var mesh_instance = MeshInstance3D.new()
+	mesh_instance = item_mesh.instantiate()
 	$ItemSlot.add_child(mesh_instance)
-	mesh_instance.mesh = item_mesh
 	
 	# center the mesh on the slot center, in case the mesh's origin is not centered
 	var box:AABB = mesh_instance.get_aabb()
@@ -29,7 +29,7 @@ func _ready():
 
 
 func _on_dialog_finished():
-	var item_name = item_mesh.get_meta("object", "")
+	var item_name = mesh_instance.get_meta("object", "")
 	pickedup.emit(item_name)
 	if GameManager.has_player():
 		GameManager.get_player().inventory.append(item_name)

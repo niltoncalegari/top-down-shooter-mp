@@ -32,7 +32,7 @@
 [ext_resource type="PackedScene" uid="uid://dhdf5mxqpfbnm" path="res://assets/prototype_bits/table_medium_Decorated.gltf" id="30_h2y4e"]
 [ext_resource type="PackedScene" uid="uid://cvasin4b5w0ll" path="res://assets/prototype_bits/Door_B.gltf" id="31_2i6fa"]
 [ext_resource type="PackedScene" uid="uid://ghvokiyi5vxr" path="res://assets/objects/laboratory/item_distributor.tscn" id="32_r2fax"]
-[ext_resource type="BoxMesh" uid="uid://jmldsyopndwf" path="res://assets/objects/end_gem.tres" id="33_15a37"]
+[ext_resource type="PackedScene" uid="uid://kve2b43ixa5g" path="res://assets/objects/end_gem.tscn" id="33_wovpr"]
 [ext_resource type="Resource" uid="uid://bh0w2xg3k5a7g" path="res://scenes/level1/level1_drmegadroon.dtl" id="34_koovr"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_2ocdk"]
@@ -55,22 +55,18 @@ switch = NodePath("../SwitchHubOpeningDoors/InteractiveDoor2")
 
 [sub_resource type="Resource" id="Resource_6plx3"]
 script = ExtResource("3_dx2yw")
-inverse_polarity = false
 switch = NodePath("../SwitchHubOpeningDoors/EnemySpawner")
 
 [sub_resource type="Resource" id="Resource_vg0au"]
 script = ExtResource("3_dx2yw")
-inverse_polarity = false
 switch = NodePath("../SwitchHubOpeningDoors/EnemySpawner2")
 
 [sub_resource type="Resource" id="Resource_gah4f"]
 script = ExtResource("3_dx2yw")
-inverse_polarity = false
 switch = NodePath("InteractiveDoor1")
 
 [sub_resource type="Resource" id="Resource_jav86"]
 script = ExtResource("3_dx2yw")
-inverse_polarity = false
 switch = NodePath("InteractiveDoor2")
 
 [sub_resource type="Resource" id="Resource_8g4un"]
@@ -95,22 +91,18 @@ switch = NodePath("../SwitchHubOpeningDoors/InteractiveDoor2")
 
 [sub_resource type="Resource" id="Resource_ttcm5"]
 script = ExtResource("3_dx2yw")
-inverse_polarity = false
 switch = NodePath("../SwitchHubOpeningDoors/EnemySpawner")
 
 [sub_resource type="Resource" id="Resource_hv6hq"]
 script = ExtResource("3_dx2yw")
-inverse_polarity = false
 switch = NodePath("../SwitchHubOpeningDoors/EnemySpawner2")
 
 [sub_resource type="Resource" id="Resource_anpf8"]
 script = ExtResource("3_dx2yw")
-inverse_polarity = false
 switch = NodePath("InteractiveDoor1")
 
 [sub_resource type="Resource" id="Resource_2pmel"]
 script = ExtResource("3_dx2yw")
-inverse_polarity = false
 switch = NodePath("InteractiveDoor2")
 
 [sub_resource type="Resource" id="Resource_nj6g5"]
@@ -459,7 +451,7 @@ visible = false
 
 [node name="ItemDistributor" parent="Room3" instance=ExtResource("32_r2fax")]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 2, 4, 38)
-item_mesh = ExtResource("33_15a37")
+item_mesh = ExtResource("33_wovpr")
 dialog_timeline = ExtResource("34_koovr")
 jump_to_label = "OnEnding"
 

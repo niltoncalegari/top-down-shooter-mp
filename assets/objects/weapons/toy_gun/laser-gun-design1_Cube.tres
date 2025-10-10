@@ -41,4 +41,3 @@ _surfaces = [{
 }]
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_vytni")
-metadata/object = &"toygun"

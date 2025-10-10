@@ -1,15 +1,15 @@
 class_name Collectable extends Area3D
 
-@export var item_mesh:Mesh = null
+@export var item_mesh:PackedScene = null
+var mesh_instance:MeshInstance3D = null
 
 signal pickedup(object_name:String)
 var tweens:Array[Tween] = []
 
 func _ready():
 	self.pickedup.connect(GameManager.on_pickup_item)
-	var mesh_instance = MeshInstance3D.new()
+	mesh_instance = item_mesh.instantiate()
 	$ItemSlot.add_child(mesh_instance)
-	mesh_instance.mesh = item_mesh
 	
 	# center the mesh on the slot center, in case the mesh's origin is not centered
 	var box:AABB = mesh_instance.get_aabb()
@@ -25,7 +25,7 @@ func _ready():
 
 
 func on_picked_up():
-	var item_name = item_mesh.get_meta("object", "")
+	var item_name = mesh_instance.get_meta("object", "")
 	pickedup.emit(item_name) # GameManager will take care of adding item to player
 	tweens.map(func(x): x.kill())
 	self.queue_free()
