@@ -1,14 +1,17 @@
-[gd_scene load_steps=6 format=3 uid="uid://bv55eibbam6m6"]
+[gd_scene load_steps=7 format=3 uid="uid://bv55eibbam6m6"]
 
 [ext_resource type="Script" uid="uid://b1xrinwfnjecq" path="res://scenes/game_manager.gd" id="1_3c0uv"]
 [ext_resource type="PackedScene" uid="uid://jga6pbb5xpug" path="res://characters/player/PlayerEntity.tscn" id="2"]
-[ext_resource type="PackedScene" uid="uid://b87aieg3uitnk" path="res://scenes/level1/level1.tscn" id="3_6l6n1"]
 [ext_resource type="PackedScene" uid="uid://bd5lrudlpxbay" path="res://ui/GameOverMenu.tscn" id="3_ss24o"]
 [ext_resource type="PackedScene" uid="uid://bsvdg3ojnd0oj" path="res://ui/ControllerMenu.tscn" id="13_ysf7g"]
+[ext_resource type="PackedScene" uid="uid://df4m3x6p8o5y" path="res://networking/MultiplayerMenu.tscn" id="14_ysf7g"]
+[ext_resource type="PackedScene" uid="uid://f6n8p2b4o5y" path="res://scenes/test_multiplayer/test_multiplayer.tscn" id="15_m4n2p"]
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_3c0uv")
 player_packed_scene = ExtResource("2")
+
+[node name="MultiplayerMenu" parent="." instance=ExtResource("14_ysf7g")]
 
 [node name="ControllerMenu" parent="." instance=ExtResource("13_ysf7g")]
 visible = false
@@ -16,4 +19,4 @@ visible = false
 [node name="GameOverMenu" parent="." instance=ExtResource("3_ss24o")]
 visible = false
 
-[node name="Level1" parent="." instance=ExtResource("3_6l6n1")]
+[node name="TestMultiplayerLevel" parent="." instance=ExtResource("15_m4n2p")]

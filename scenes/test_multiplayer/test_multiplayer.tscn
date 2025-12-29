@@ -1,0 +1,72 @@
+[gd_scene load_steps=10 format=3 uid="uid://f6n8p2b4o5y"]
+
+[ext_resource type="Script" path="res://scenes/level_manager.gd" id="1_m4n2p"]
+[ext_resource type="PackedScene" uid="uid://e6n8p2b4o5y" path="res://assets/objects/hat_machines/HatMachine.tscn" id="2_m4n2p"]
+[ext_resource type="Resource" uid="uid://c6n8p2b4o5y" path="res://characters/classes/resources/warrior.tres" id="3_m4n2p"]
+[ext_resource type="Resource" uid="uid://d6n8p2b4o5y" path="res://characters/classes/resources/mage.tres" id="4_m4n2p"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_m4n2p"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_m4n2p"]
+sky_material = SubResource("ProceduralSkyMaterial_m4n2p")
+
+[sub_resource type="Environment" id="Environment_m4n2p"]
+background_mode = 2
+sky = SubResource("Sky_m4n2p")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_m4n2p"]
+size = Vector2(50, 50)
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_m4n2p"]
+data = PackedVector3Array(25, 0, 25, -25, 0, 25, 25, 0, -25, -25, 0, 25, -25, 0, -25, 25, 0, -25)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
+albedo_color = Color(0.25, 0.25, 0.25, 1)
+grid_enabled = true
+grid_size = Vector3(1, 1, 1)
+
+[node name="TestMultiplayerLevel" type="Node3D"]
+script = ExtResource("1_m4n2p")
+skip_intro = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_m4n2p")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_m4n2p")
+surface_material_override/0 = SubResource("StandardMaterial3D_floor")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Floor"]
+collision_layer = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor/StaticBody3D"]
+shape = SubResource("ConcavePolygonShape3D_m4n2p")
+
+[node name="PlayerStart" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="WarriorMachine" parent="." instance=ExtResource("2_m4n2p")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, -5)
+class_to_give = ExtResource("3_m4n2p")
+
+[node name="Label3D" parent="WarriorMachine" index="2"]
+text = "TORNE-SE GUERREIRO"
+
+[node name="MageMachine" parent="." instance=ExtResource("2_m4n2p")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, -5)
+class_to_give = ExtResource("4_m4n2p")
+
+[node name="Label3D" parent="MageMachine" index="2"]
+text = "TORNE-SE MAGO"
+
+[editable path="WarriorMachine"]
+[editable path="MageMachine"]
+

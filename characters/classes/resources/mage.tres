@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="PlayerClass" load_steps=2 format=3 uid="uid://d6n8p2b4o5y"]
+
+[ext_resource type="Script" path="res://characters/player/PlayerClass.gd" id="1_m4n2p"]
+
+[resource]
+script = ExtResource("1_m4n2p")
+class_name_str = "Mago"
+max_health = 100
+movement_speed = 4.5
+damage = 30
+

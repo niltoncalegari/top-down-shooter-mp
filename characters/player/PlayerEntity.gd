@@ -16,10 +16,55 @@ extends CharacterBody3D
 @export var controller_schemes:Array[PackedScene]
 @export var game_data:GameDataStore
 
-@export var inventory:Array = []
+@export var current_class: PlayerClass: set = _set_player_class
+@export var inventory: Array = []
 signal is_dead
 
+func _set_player_class(new_class: PlayerClass):
+	current_class = new_class
+	if not is_inside_tree(): await ready
+	
+	if current_class:
+		# Atualizar Vida
+		health_manager.max_health = current_class.max_health
+		health_manager.get_full_health()
+		
+		# Atualizar Velocidade (depende do controller)
+		if current_controller and "speed" in current_controller:
+			current_controller.speed = current_class.movement_speed
+		
+		# Atualizar Visual (Chapéu)
+		# model.update_hat(current_class.hat_mesh)
+		
+		print("Classe alterada para: ", current_class.class_name_str)
+
+@rpc("any_peer", "reliable")
+func change_class_rpc(class_path: String):
+	var class_res = load(class_path)
+	if class_res is PlayerClass:
+		current_class = class_res
+
 func _ready():
+	# Configurar authority se o nome for o ID do peer
+	if name.is_valid_int():
+		set_multiplayer_authority(name.to_int())
+	
+	# Só processa se for o dono do player (Multiplayer)
+	if multiplayer.multiplayer_peer and not is_multiplayer_authority():
+		set_process(false)
+		set_physics_process(false)
+		$CameraPivot/ThirdPersonCamera.current = false
+		return
+
+	# Adicionar sincronizador dinamicamente se estiver em rede
+	if multiplayer.multiplayer_peer:
+		var synchronizer = MultiplayerSynchronizer.new()
+		var config = SceneReplicationConfig.new()
+		config.add_property(".:position")
+		config.add_property(".:rotation")
+		synchronizer.replication_config = config
+		add_child(synchronizer)
+
 	game_data.controller_scheme_changed.connect(_on_controller_scheme_changed)
 	if use_saved_controller:
 		_on_controller_scheme_changed(game_data.controller_scheme)

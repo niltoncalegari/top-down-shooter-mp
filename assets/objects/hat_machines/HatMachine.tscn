@@ -1,0 +1,30 @@
+[gd_scene load_steps=5 format=3 uid="uid://e6n8p2b4o5y"]
+
+[ext_resource type="Script" path="res://assets/objects/hat_machines/HatMachine.gd" id="1_m4n2p"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_m4n2p"]
+size = Vector3(1.5, 2, 1.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_m4n2p"]
+size = Vector3(1, 1.5, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_m4n2p"]
+albedo_color = Color(0.2, 0.6, 1, 1)
+
+[node name="HatMachine" type="Area3D"]
+script = ExtResource("1_m4n2p")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("BoxShape3D_m4n2p")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+mesh = SubResource("BoxMesh_m4n2p")
+surface_material_override/0 = SubResource("StandardMaterial3D_m4n2p")
+
+[node name="Label3D" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+billboard = 1
+text = "MÁQUINA DE CHAPÉUS"
+

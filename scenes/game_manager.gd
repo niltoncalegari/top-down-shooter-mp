@@ -20,10 +20,25 @@ static func on_pickup_item(name:String):
 		level.on_card_picked_up()
 
 func _ready():
+	# Configurar MultiplayerSpawner se estivermos em modo multiplayer
+	if multiplayer.multiplayer_peer:
+		var spawner = MultiplayerSpawner.new()
+		spawner.spawn_path = self.get_path()
+		spawner._set_spawnable_scenes([player_packed_scene.resource_path])
+		add_child(spawner)
 	
 	find_game_elements() # find player, level and gameovermenu
-	if not player and level and level.skip_intro:
-		spawn_player()
+	
+	# No multiplayer, o servidor spawna os jogadores
+	if multiplayer.is_server():
+		multiplayer.peer_connected.connect(spawn_player)
+		multiplayer.peer_disconnected.connect(remove_player)
+		# Spawna o player local do host
+		spawn_player(1)
+	
+	if not player and level and level.skip_intro and not multiplayer.multiplayer_peer:
+		spawn_player_local()
+		
 	if level: 
 		level.introscene_finished.connect(initialise_player)
 	if gameover_menu:
@@ -45,17 +60,49 @@ func find_game_elements():
 func initialise_player():
 	if player:
 		player.queue_free()
-	spawn_player()
-	player.camera.current = true
+	
+	if multiplayer.multiplayer_peer:
+		if multiplayer.is_server():
+			spawn_player(1)
+	else:
+		spawn_player_local()
+		
+	if player:
+		player.camera.current = true
 
 
-
-func spawn_player():
+func spawn_player_local():
 	player = player_packed_scene.instantiate()
 	add_child(player)
-	player.global_transform = level.player_start_point.global_transform
-	player.camera_pivot.rotation_degrees = level.camera_start_rotation
-	player.position_resetter.update_reset_position()
+	_setup_player_location(player)
+
+
+func spawn_player(id: int):
+	var p = player_packed_scene.instantiate()
+	p.name = str(id)
+	add_child(p)
+	_setup_player_location(p)
+	if id == multiplayer.get_unique_id():
+		player = p
+
+
+func remove_player(id: int):
+	var p = get_node_or_null(str(id))
+	if p:
+		p.queue_free()
+
+
+func _setup_player_location(p: PlayerEntity):
+	if level:
+		var spawn_point = level.get_node_or_null("PlayerStart")
+		if spawn_point:
+			p.global_transform = spawn_point.global_transform
+		else:
+			p.global_transform = level.player_start_point.global_transform
+		
+		if "camera_start_rotation" in level:
+			p.camera_pivot.rotation_degrees = level.camera_start_rotation
+	p.position_resetter.update_reset_position()
 
 
 static func on_player_death():
@@ -66,7 +113,8 @@ func on_quit_pressed():
 	get_tree().quit()
 
 func on_restart_pressed():
-	player.position_resetter.reset_position()
-	player.on_respawn()
+	if player:
+		player.position_resetter.reset_position()
+		player.on_respawn()
 	if gameover_menu: 
 		gameover_menu.hide()
