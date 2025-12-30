@@ -5,33 +5,34 @@ extends Control
 @onready var status_label = $VBoxContainer/StatusLabel
 
 func _ready():
-	NetworkManager.connection_failed.connect(_on_connection_failed)
-	NetworkManager.connection_succeeded.connect(_on_connection_success)
+	NetworkManager.player_connected.connect(_on_player_connected)
 	NetworkManager.server_disconnected.connect(_on_server_disconnected)
 
 func _on_host_pressed():
-	var err = NetworkManager.host_game(name_input.text)
+	NetworkManager.player_info["name"] = name_input.text
+	var err = NetworkManager.create_game()
 	if err == OK:
-		status_label.text = "Hosting..."
-		hide()
+		status_label.text = "Hosting on port " + str(NetworkManager.PORT)
 	else:
 		status_label.text = "Error hosting: " + str(err)
 
 func _on_join_pressed():
-	var err = NetworkManager.join_game(address_input.text, name_input.text)
+	NetworkManager.player_info["name"] = name_input.text
+	var err = NetworkManager.join_game(address_input.text)
 	if err == OK:
-		status_label.text = "Joining..."
+		status_label.text = "Connecting..."
 	else:
 		status_label.text = "Error joining: " + str(err)
 
-func _on_connection_success():
-	status_label.text = "Connected!"
-	hide()
-
-func _on_connection_failed():
-	status_label.text = "Connection failed."
+func _on_player_connected(peer_id, player_info_dict):
+	# Quando o jogador local conecta, esconde o menu
+	if peer_id == multiplayer.get_unique_id():
+		status_label.text = "Connected as " + player_info_dict["name"]
+		# Dar um tempo para o spawner ser criado
+		await get_tree().create_timer(0.2).timeout
+		hide()
 
 func _on_server_disconnected():
-	status_label.text = "Server disconnected."
+	status_label.text = "Server disconnected"
 	show()
 

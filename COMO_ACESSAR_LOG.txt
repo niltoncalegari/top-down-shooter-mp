@@ -1,0 +1,21 @@
+COMO ACESSAR O ARQUIVO DE LOG:
+
+1. Pressione: Win + R
+2. Cole este caminho:
+   %APPDATA%\Godot\app_userdata\top-down-shooter-mp
+3. Pressione Enter
+4. Abra o arquivo: multiplayer_debug.log
+5. Copie TODO o conteúdo e cole aqui no chat
+
+OU
+
+Olhe no console do Godot, você deve ver uma linha:
+📝 Log sendo salvo em: [CAMINHO COMPLETO]
+
+Copie esse caminho, abra o arquivo e cole o conteúdo aqui.
+
+---
+
+Se o arquivo não existir, pode ser que o DebugLogger não esteja inicializando.
+Nesse caso, me envie o que aparece no console do Godot.
+

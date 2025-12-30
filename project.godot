@@ -23,18 +23,13 @@ DebugOverlay="*res://tools/debugging/DebugOverlay.tscn"
 BeehaveGlobalMetrics="*res://addons/beehave/metrics/beehave_global_metrics.gd"
 BeehaveGlobalDebugger="*res://addons/beehave/debug/global_debugger.gd"
 NetworkManager="*res://networking/NetworkManager.gd"
+DebugLogger="*res://networking/DebugLogger.gd"
 Dialogic="*res://addons/dialogic/Core/DialogicGameHandler.gd"
 
 [dialogic]
 
-directories/dch_directory={
-"dr_megadroon_character": "res://characters/NPC/dr_megadroon_character.dch"
-}
-directories/dtl_directory={
-"dr_megadroon": "res://characters/NPC/dr_megadroon.dtl",
-"level1_drmegadroon": "res://scenes/level1/level1_drmegadroon.dtl",
-"level1_intro": "res://scenes/level1/level1_intro.dtl"
-}
+directories/dch_directory={}
+directories/dtl_directory={}
 glossary/default_case_sensitive=true
 layout/style_list=["res://ui/dialogic_style/dialog_style.tres"]
 layout/default_style="res://ui/dialogic_style/dialog_style.tres"
