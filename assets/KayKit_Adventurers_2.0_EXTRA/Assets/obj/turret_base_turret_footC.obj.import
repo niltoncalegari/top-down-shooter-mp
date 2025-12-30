@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://ds735xyjx2mp4"
+path="res://.godot/imported/turret_base_turret_footC.obj-cf41e917cb085f1baf8dcacadb9cc007.mesh"
+
+[deps]
+
+files=["res://.godot/imported/turret_base_turret_footC.obj-cf41e917cb085f1baf8dcacadb9cc007.mesh"]
+
+source_file="res://assets/KayKit_Adventurers_2.0_EXTRA/Assets/obj/turret_base_turret_footC.obj"
+dest_files=["res://.godot/imported/turret_base_turret_footC.obj-cf41e917cb085f1baf8dcacadb9cc007.mesh", "res://.godot/imported/turret_base_turret_footC.obj-cf41e917cb085f1baf8dcacadb9cc007.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

@@ -25,6 +25,31 @@ func _ready():
 	multiplayer.connection_failed.connect(_on_connected_fail)
 	multiplayer.server_disconnected.connect(_on_server_disconnected)
 
+# Detectar quando o jogo fecha
+func _notification(what):
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		_cleanup_on_exit()
+		get_tree().quit()
+
+func _cleanup_on_exit():
+	# Limpar sessao ao fechar o jogo
+	print("[NET] Limpando sessao antes de fechar...")
+	
+	if AuthManager.is_logged_in():
+		var username = AuthManager.get_current_user()
+		var peer_id = multiplayer.get_unique_id() if multiplayer.multiplayer_peer else 0
+		
+		# Remover sessao
+		if peer_id > 0:
+			AuthManager.logout_by_peer(peer_id)
+		else:
+			AuthManager.logout(username)
+		
+		print("[NET] Sessao limpa para: ", username)
+	
+	# Desconectar do servidor
+	disconnect_from_server()
+
 func join_game(address = ""):
 	if address == "":
 		address = DEFAULT_SERVER_IP

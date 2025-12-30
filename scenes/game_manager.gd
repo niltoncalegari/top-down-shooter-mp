@@ -56,6 +56,10 @@ func _on_player_connected(peer_id, player_info_dict):
 	var saved_class = DatabaseManager.get_player_class(username)
 	PlayerStatsManager.register_player(peer_id, username, saved_class)
 	
+	# Atribuir time automaticamente (auto-balance)
+	if multiplayer.is_server():
+		TeamManager.auto_assign_team(peer_id)
+	
 	# Apenas o servidor spawna players
 	if not multiplayer.is_server():
 		return
@@ -69,6 +73,9 @@ func _on_player_disconnected(peer_id):
 	# Remover do PlayerStatsManager
 	PlayerStatsManager.unregister_player(peer_id)
 	
+	# Remover do TeamManager
+	TeamManager.remove_player(peer_id)
+	
 	var p = get_node_or_null(str(peer_id))
 	if p:
 		p.queue_free()
@@ -81,8 +88,12 @@ func _spawn_player(id: int):
 		print("  [WARN] AVISO: Player ", id, " já existe! Pulando.")
 		return
 	
-	var spawn_pos = Vector3.ZERO
-	if level:
+	# Obter spawn do time
+	var team = TeamManager.get_player_team(id)
+	var spawn_pos = TeamManager.get_team_spawn(team)
+	
+	# Se não tiver spawn definido, usar spawn points do level
+	if spawn_pos == Vector3.ZERO and level:
 		var spawn_point_name = "SpawnPoint" + str(spawn_point_index + 1)
 		var spawn_point = level.get_node_or_null(spawn_point_name)
 		
@@ -96,6 +107,8 @@ func _spawn_player(id: int):
 			print("Usando spawn circular: ", spawn_pos)
 		
 		spawn_point_index += 1
+	
+	print("  [SPAWN] Player ", id, " | Time: ", TeamManager.Team.keys()[team], " | Pos: ", spawn_pos)
 	
 	print("  ➜ Instanciando player ", id, " em ", spawn_pos)
 	var p = player_packed_scene.instantiate()

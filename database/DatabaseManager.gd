@@ -33,6 +33,9 @@ func _initialize_database() -> void:
 	# Aplicar migrations
 	_apply_migrations()
 	
+	# Limpar sessoes antigas (mais de 24 horas)
+	cleanup_old_sessions(24)
+	
 	db_ready = true
 	data_loaded.emit()
 
@@ -225,6 +228,8 @@ func remove_session_by_peer(peer_id: int) -> void:
 	
 	var query = "DELETE FROM active_sessions WHERE peer_id = ?"
 	db.query_with_bindings(query, [peer_id])
+	
+	print("[DB] Sessao removida por peer: ", peer_id)
 
 func is_user_logged_in(username: String) -> bool:
 	# Verifica se um usuario esta logado
@@ -259,6 +264,19 @@ func clear_all_sessions() -> void:
 	
 	db.query("DELETE FROM active_sessions")
 	print("[DB] Todas as sessoes foram limpas")
+
+func cleanup_old_sessions(max_age_hours: int = 24) -> void:
+	# Remove sessoes antigas (timeout)
+	if not db_ready:
+		return
+	
+	var query = """
+	DELETE FROM active_sessions 
+	WHERE datetime(created_at, '+' || ? || ' hours') < datetime('now')
+	"""
+	db.query_with_bindings(query, [max_age_hours])
+	
+	print("[DB] Sessoes antigas limpas (> ", max_age_hours, " horas)")
 
 # ==================== STATS ====================
 

@@ -5,7 +5,7 @@ extends CharacterBody3D
 @onready var camera:Camera3D = $CameraPivot/ThirdPersonCamera
 @onready var camera_pivot:Node3D = $CameraPivot
 @onready var model := $IcySkin
-@onready var health_manager := $HealthManager
+@onready var health_manager: HealthManager = null  # Será criado dinamicamente
 @onready var anim_tree := $IcySkin/AnimationTree
 @onready var shoot_anchor := $IcySkin/%ShootAnchor
 @onready var current_controller := $TwoStickControllerAuto
@@ -18,7 +18,13 @@ extends CharacterBody3D
 @export var current_class: PlayerClass: set = _set_player_class
 @export var inventory: Array = []
 
+# Team e combate
+var team: TeamManager.Team = TeamManager.Team.NEUTRAL
+var peer_id: int = -1
+
 signal is_dead
+signal health_changed(current_hp: float, max_hp: float)
+signal respawned()
 
 # CRÍTICO: Configurar autoridade ANTES de _ready() para garantir sincronização
 func _enter_tree():
@@ -36,6 +42,19 @@ func _ready():
 	print("║ É meu?: ", is_multiplayer_authority())
 	print("║ Sou servidor?: ", multiplayer.is_server())
 	print("╚═══════════════════════════════════════")
+	
+	# Configurar peer_id
+	if name.is_valid_int():
+		peer_id = name.to_int()
+	else:
+		peer_id = multiplayer.get_unique_id()
+	
+	# Criar e configurar HealthManager
+	_setup_health_manager()
+	
+	# Obter time do TeamManager
+	team = TeamManager.get_player_team(peer_id)
+	print("║ Time: ", TeamManager.Team.keys()[team])
 	
 	# Garantir que o AnimationTree está ativo para TODOS os players
 	if anim_tree:
@@ -73,6 +92,8 @@ func _ready():
 	
 	Dialogic.timeline_started.connect(_on_dialog_started)
 	Dialogic.timeline_ended.connect(_on_dialog_ended)
+	
+	# Nota: O registro no PlayerStatsManager é feito pelo GameManager
 
 # Debug: Verificar sincronização
 var last_pos = Vector3.ZERO
@@ -103,48 +124,59 @@ func _physics_process(_delta):
 		move_and_slide()
 	# Para o player LOCAL: o controller já chama move_and_slide()
 
+func _setup_health_manager():
+	# Criar HealthManager como filho
+	health_manager = HealthManager.new()
+	add_child(health_manager)
+	
+	# Configurar valores iniciais
+	var initial_hp = 100.0
+	if current_class:
+		initial_hp = current_class.max_health
+	
+	health_manager.initialize(initial_hp, peer_id)
+	
+	# Conectar sinais
+	health_manager.health_changed.connect(_on_health_changed)
+	health_manager.died.connect(_on_died)
+	health_manager.respawned.connect(_on_respawned)
+	
+	print("[PLAYER] HealthManager configurado - HP: ", initial_hp)
+
 func _set_player_class(new_class: PlayerClass):
 	current_class = new_class
 	if not is_inside_tree(): 
 		await ready
 	
 	if current_class:
-		health_manager.max_health = current_class.max_health
-		health_manager.get_full_health()
+		# Atualizar HP máximo
+		if health_manager:
+			health_manager.set_max_health(current_class.max_health)
 		
+		# Atualizar velocidade
 		if current_controller and "speed" in current_controller:
 			current_controller.speed = current_class.movement_speed
 		
-		# Atualizar visual da classe (cor do modelo)
+		# Atualizar visual da classe (cor baseada no time)
 		_update_class_visual()
 		
 		print("Classe alterada para: ", current_class.class_name_str)
 		
-		# Atualizar no PlayerStatsManager (apenas para o jogador local)
+		# Atualizar no PlayerStatsManager
 		if is_multiplayer_authority():
-			var peer_id = multiplayer.get_unique_id()
 			PlayerStatsManager.update_player_class(peer_id, current_class.class_name_str)
 
 func _update_class_visual():
-	"""Atualiza a aparência visual do player baseado na classe"""
-	if not current_class or not model:
+	# Atualiza a aparência visual do player baseado no TIME (não na classe)
+	if not model:
 		return
 	
-	# Definir cor baseada na classe
-	var class_color: Color
-	match current_class.class_name_str:
-		"Guerreiro":
-			class_color = Color(0.8, 0.2, 0.2)  # Vermelho - Tanque
-		"Mago":
-			class_color = Color(0.2, 0.2, 0.8)  # Azul - Mágico
-		"Arqueiro":
-			class_color = Color(0.2, 0.8, 0.2)  # Verde - Ágil
-		"Sacerdote":
-			class_color = Color(1.0, 1.0, 0.2)  # Amarelo - Suporte
-		"Aldeão":
-			class_color = Color(0.6, 0.6, 0.6)  # Cinza - Básico
-		_:
-			class_color = Color(1, 1, 1)  # Branco padrão
+	# Obter cor do time
+	var team_color = TeamManager.get_team_color(team)
+	
+	# Se não tiver time, usar cor neutra
+	if team == TeamManager.Team.NEUTRAL:
+		team_color = Color(0.7, 0.7, 0.7)
 	
 	# Encontrar e aplicar cor ao MeshInstance3D dentro do modelo
 	var armature = model.get_node_or_null("Armature")
@@ -154,16 +186,17 @@ func _update_class_visual():
 			# Procurar pelo MeshInstance3D filho do Skeleton3D
 			for child in skeleton.get_children():
 				if child is MeshInstance3D:
-					# Criar um material override com a cor da classe
+					# Criar um material override com a cor do time
 					var mat = StandardMaterial3D.new()
-					mat.albedo_color = class_color
+					mat.albedo_color = team_color
 					mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 					
 					# Aplicar o material override
 					child.set_surface_override_material(0, mat)
-					print("   🎨 Cor aplicada no mesh: ", child.name, " | Cor: ", class_color)
+					print("   [VISUAL] Cor do time aplicada: ", team_color)
 	
-	print("   🎨 Visual atualizado para classe: ", current_class.class_name_str)
+	if current_class:
+		print("   [VISUAL] Classe: ", current_class.class_name_str, " | Time: ", TeamManager.Team.keys()[team])
 
 @rpc("any_peer", "call_local", "reliable")
 func change_class_rpc(class_path: String):
@@ -181,24 +214,67 @@ func change_class_rpc(class_path: String):
 	else:
 		push_error("   ❌ Falha ao carregar classe: ", class_path)
 
+# Callbacks do HealthManager
+func _on_health_changed(current_hp: float, max_hp: float):
+	health_changed.emit(current_hp, max_hp)
+	print("[PLAYER] HP: ", current_hp, "/", max_hp)
+
+func _on_died(killer_id: int):
+	print("[PLAYER] Morreu! Killer: ", killer_id)
+	is_dead.emit()
+	
+	# Desabilitar controle
+	if current_controller:
+		current_controller.process_mode = Node.PROCESS_MODE_DISABLED
+	
+	# Animação de morte
+	if model and model.has_method("move_to_dead"):
+		model.move_to_dead()
+	
+	# Agendar respawn (apenas no servidor)
+	if multiplayer.is_server():
+		await get_tree().create_timer(5.0).timeout
+		_do_respawn()
+
+func _on_respawned():
+	print("[PLAYER] Respawn!")
+	respawned.emit()
+	
+	# Reabilitar controle
+	if current_controller:
+		current_controller.process_mode = Node.PROCESS_MODE_INHERIT
+	
+	# Animação de idle/running
+	if model and model.has_method("move_to_running"):
+		model.move_to_running()
+
+func _do_respawn():
+	# Reposicionar no spawn do time
+	var spawn_pos = TeamManager.get_team_spawn(team)
+	global_position = spawn_pos
+	
+	# Resetar classe para Villager
+	var villager_class = load("res://characters/classes/villager.tres")
+	if villager_class:
+		current_class = villager_class
+	
+	# Ressuscitar via RPC
+	if multiplayer.is_server():
+		health_manager.respawn.rpc()
+
+# Métodos legados (manter compatibilidade)
 func on_hit():
 	if model and model.has_method("play_on_hit"):
 		model.play_on_hit(true)
 
 func on_death():
-	is_dead.emit()
-	if model and model.has_method("move_to_dead"):
-		model.move_to_dead()
-	if current_controller and current_controller.has_method("on_death"):
-		current_controller.on_death()
-	GameManager.on_player_death()
+	# Redirecionar para o novo sistema
+	if health_manager:
+		health_manager.die()
 
 func on_respawn():
-	if model and model.has_method("move_to_running"):
-		model.move_to_running()
-	if current_controller and current_controller.has_method("on_respawn"):
-		current_controller.on_respawn()
-	health_manager.get_full_health()
+	# Redirecionar para o novo sistema
+	_on_respawned()
 
 func _on_dialog_started():
 	if current_controller:
