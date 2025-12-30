@@ -56,8 +56,13 @@
 - [ ] Tela de perfil do jogador
 - [ ] Histórico de partidas
 
-### 3.3 - Infraestrutura (Opcional)
-- [ ] Docker + SQLite setup with migrations and backups
+### 3.3 - Infraestrutura [✅ COMPLETED]
+- [x] SQLite setup com migrations
+- [x] Estrutura de pasta database/db/ e database/migrations/
+- [x] Migration inicial (001_initial_schema.sql)
+- [x] DatabaseManagerSQLite.gd completo
+- [x] Documentação completa (MIGRACAO_SQLITE.md)
+- [ ] Docker setup (opcional - não necessário para SQLite)
 
 ## Phase 4: Combat & Abilities System [📋 PLANNED]
 **Objetivo:** Implementar combate multiplayer com diferentes tipos de ataque por classe
