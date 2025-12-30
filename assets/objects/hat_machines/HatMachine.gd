@@ -7,7 +7,9 @@ func _ready():
 
 func _on_body_entered(body):
 	if body is PlayerEntity:
+		# Apenas o dono do player pode mudar sua classe
 		if body.is_multiplayer_authority():
+			print("🎩 Player ", body.name, " entrando na Hat Machine: ", class_to_give.class_name_str)
+			# Chamar RPC para sincronizar em TODOS os clientes
 			body.change_class_rpc.rpc(class_to_give.resource_path)
-			print("Player mudou para ", class_to_give.class_name_str)
 

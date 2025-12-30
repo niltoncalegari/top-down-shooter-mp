@@ -115,13 +115,66 @@ func _set_player_class(new_class: PlayerClass):
 		if current_controller and "speed" in current_controller:
 			current_controller.speed = current_class.movement_speed
 		
+		# Atualizar visual da classe (cor do modelo)
+		_update_class_visual()
+		
 		print("Classe alterada para: ", current_class.class_name_str)
 
-@rpc("any_peer", "reliable")
+func _update_class_visual():
+	"""Atualiza a aparência visual do player baseado na classe"""
+	if not current_class or not model:
+		return
+	
+	# Definir cor baseada na classe
+	var class_color: Color
+	match current_class.class_name_str:
+		"Guerreiro":
+			class_color = Color(0.8, 0.2, 0.2)  # Vermelho - Tanque
+		"Mago":
+			class_color = Color(0.2, 0.2, 0.8)  # Azul - Mágico
+		"Arqueiro":
+			class_color = Color(0.2, 0.8, 0.2)  # Verde - Ágil
+		"Sacerdote":
+			class_color = Color(1.0, 1.0, 0.2)  # Amarelo - Suporte
+		"Aldeão":
+			class_color = Color(0.6, 0.6, 0.6)  # Cinza - Básico
+		_:
+			class_color = Color(1, 1, 1)  # Branco padrão
+	
+	# Encontrar e aplicar cor ao MeshInstance3D dentro do modelo
+	var armature = model.get_node_or_null("Armature")
+	if armature:
+		var skeleton = armature.get_node_or_null("Skeleton3D")
+		if skeleton:
+			# Procurar pelo MeshInstance3D filho do Skeleton3D
+			for child in skeleton.get_children():
+				if child is MeshInstance3D:
+					# Criar um material override com a cor da classe
+					var mat = StandardMaterial3D.new()
+					mat.albedo_color = class_color
+					mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+					
+					# Aplicar o material override
+					child.set_surface_override_material(0, mat)
+					print("   🎨 Cor aplicada no mesh: ", child.name, " | Cor: ", class_color)
+	
+	print("   🎨 Visual atualizado para classe: ", current_class.class_name_str)
+
+@rpc("any_peer", "call_local", "reliable")
 func change_class_rpc(class_path: String):
+	print("🎩 RPC change_class_rpc recebido")
+	print("   Player: ", name)
+	print("   Classe: ", class_path)
+	print("   Chamado por: ", multiplayer.get_remote_sender_id())
+	print("   Meu ID: ", multiplayer.get_unique_id())
+	
 	var class_res = load(class_path)
 	if class_res is PlayerClass:
 		current_class = class_res
+		print("   ✅ Classe alterada para: ", current_class.class_name_str)
+		print("   HP: ", current_class.max_health, " | Speed: ", current_class.movement_speed, " | Damage: ", current_class.damage)
+	else:
+		push_error("   ❌ Falha ao carregar classe: ", class_path)
 
 func on_hit():
 	if model and model.has_method("play_on_hit"):
