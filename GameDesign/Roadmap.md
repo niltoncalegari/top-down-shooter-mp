@@ -22,10 +22,12 @@
 - [x] Criar recursos de classe: Warrior, Mage, Priest, Ranger, Villager
 - [x] Sistema de cores por classe (visual feedback)
 
-### 2.2 - Aprimorar Sistema de Classes [⏸️ ON HOLD]
-- [ ] Create 3D Models/Placeholders for hats (Warrior, Ranger, Mage, Priest, Worker)
+### 2.2 - Aprimorar Sistema de Classes [🔄 IN PROGRESS]
+- [x] Organizar assets KayKit Adventurers 2.0 por classe
+- [ ] Integrar modelos 3D de personagens (Knight, Ranger, Mage, Druid, Engineer)
+- [ ] Integrar animações (idle, walk, run, attack, death) por classe
 - [x] Class-specific stats application (HP, Speed, Damage)
-- [x] Visual update of the player model (Color coding)
+- [ ] Sistema de cores por time (aplicado ao material do personagem)
 - [ ] Hat attachment to player model (3D mesh)
 - [ ] Sistema de cooldown para troca de classe (evitar spam)
 - [ ] Adicionar mais Hat Machines na cena de teste
@@ -96,6 +98,9 @@
 ### 5.2 - Game Loop
 - [ ] Match start/end logic
 - [ ] Sistema de times (Red vs Blue)
+- [ ] Lobby system com seleção de times
+- [ ] Sistema de líder de time (team leader)
+- [ ] Seleção de cor do time no lobby (líder escolhe, cores não podem ser iguais)
 - [ ] Tela de resultados com stats
 - [ ] Sistema de recompensas
 - [ ] Resource-based upgrades for Hat Machines
