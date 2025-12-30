@@ -24,6 +24,11 @@ func _ready():
 	NetworkManager.player_connected.connect(_on_player_connected)
 	NetworkManager.player_disconnected.connect(_on_player_disconnected)
 	
+	# Iniciar partida
+	if multiplayer.is_server():
+		PlayerStatsManager.start_match()
+		print("[GAME] Partida iniciada pelo servidor")
+	
 	_find_game_elements()
 
 func _find_game_elements():
@@ -46,6 +51,11 @@ func _on_player_connected(peer_id, player_info_dict):
 	print("My ID: ", multiplayer.get_unique_id())
 	print("========================================")
 	
+	# Registrar jogador no PlayerStatsManager
+	var username = player_info_dict.get("name", "Player")
+	var saved_class = DatabaseManager.get_player_class(username)
+	PlayerStatsManager.register_player(peer_id, username, saved_class)
+	
 	# Apenas o servidor spawna players
 	if not multiplayer.is_server():
 		return
@@ -55,6 +65,10 @@ func _on_player_connected(peer_id, player_info_dict):
 
 func _on_player_disconnected(peer_id):
 	print("Player disconnected: ", peer_id)
+	
+	# Remover do PlayerStatsManager
+	PlayerStatsManager.unregister_player(peer_id)
+	
 	var p = get_node_or_null(str(peer_id))
 	if p:
 		p.queue_free()
@@ -64,7 +78,7 @@ var spawn_point_index = 0
 func _spawn_player(id: int):
 	# Verificar se já existe
 	if has_node(str(id)):
-		print("  ⚠️ AVISO: Player ", id, " já existe! Pulando.")
+		print("  [WARN] AVISO: Player ", id, " já existe! Pulando.")
 		return
 	
 	var spawn_pos = Vector3.ZERO

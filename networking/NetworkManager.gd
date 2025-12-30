@@ -60,6 +60,18 @@ func create_game():
 func remove_multiplayer_peer():
 	multiplayer.multiplayer_peer = null
 
+func disconnect_from_server():
+	"""Desconecta do servidor atual (se conectado)"""
+	if multiplayer.multiplayer_peer:
+		print("🔌 Desconectando do servidor...")
+		multiplayer.multiplayer_peer.close()
+		multiplayer.multiplayer_peer = null
+		players.clear()
+		players_loaded = 0
+		print("✅ Desconectado com sucesso")
+	else:
+		print("⚠️ Não há conexão ativa para desconectar")
+
 # Quando um peer conecta, envie as informações do jogador local
 func _on_player_connected(id):
 	DebugLogger.log_subsection("NetworkManager._on_player_connected")
@@ -85,6 +97,10 @@ func _register_player(new_player_info):
 
 func _on_player_disconnected(id):
 	players.erase(id)
+	
+	# Fazer logout do usuário
+	AuthManager.logout_by_peer(id)
+	
 	player_disconnected.emit(id)
 
 func _on_connected_ok():
@@ -102,6 +118,10 @@ func _on_connected_fail():
 func _on_server_disconnected():
 	multiplayer.multiplayer_peer = null
 	players.clear()
+	
+	# Fazer logout do usuário atual
+	AuthManager.logout()
+	
 	server_disconnected.emit()
 
 # Função para o servidor carregar a cena do jogo

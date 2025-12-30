@@ -119,6 +119,11 @@ func _set_player_class(new_class: PlayerClass):
 		_update_class_visual()
 		
 		print("Classe alterada para: ", current_class.class_name_str)
+		
+		# Atualizar no PlayerStatsManager (apenas para o jogador local)
+		if is_multiplayer_authority():
+			var peer_id = multiplayer.get_unique_id()
+			PlayerStatsManager.update_player_class(peer_id, current_class.class_name_str)
 
 func _update_class_visual():
 	"""Atualiza a aparência visual do player baseado na classe"""

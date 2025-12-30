@@ -40,10 +40,13 @@ layout_mode = 2
 text = "Multiplayer"
 horizontal_alignment = 1
 
-[node name="NameInput" type="LineEdit" parent="VBoxContainer"]
+[node name="UserLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
-placeholder_text = "Seu Nome"
-text = "Player"
+text = "👤 Logado como: "
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
 
 [node name="AddressInput" type="LineEdit" parent="VBoxContainer"]
 layout_mode = 2
@@ -52,11 +55,18 @@ text = "127.0.0.1"
 
 [node name="HostButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-text = "Host (Servidor)"
+text = "🎮 Host (Servidor)"
 
 [node name="JoinButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-text = "Join (Entrar)"
+text = "🔗 Join (Entrar)"
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="LogoutButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "🚪 Logout"
 
 [node name="StatusLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
@@ -64,4 +74,5 @@ horizontal_alignment = 1
 
 [connection signal="pressed" from="VBoxContainer/HostButton" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="VBoxContainer/JoinButton" to="." method="_on_join_pressed"]
+[connection signal="pressed" from="VBoxContainer/LogoutButton" to="." method="_on_logout_pressed"]
 

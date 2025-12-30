@@ -22,7 +22,7 @@
 - [x] Criar recursos de classe: Warrior, Mage, Priest, Ranger, Villager
 - [x] Sistema de cores por classe (visual feedback)
 
-### 2.2 - Aprimorar Sistema de Classes [⏳ NEXT]
+### 2.2 - Aprimorar Sistema de Classes [⏸️ ON HOLD]
 - [ ] Create 3D Models/Placeholders for hats (Warrior, Ranger, Mage, Priest, Worker)
 - [x] Class-specific stats application (HP, Speed, Damage)
 - [x] Visual update of the player model (Color coding)
@@ -30,12 +30,34 @@
 - [ ] Sistema de cooldown para troca de classe (evitar spam)
 - [ ] Adicionar mais Hat Machines na cena de teste
 
-## Phase 3: Player Persistence & Database [📋 PLANNED]
-- [ ] DatabaseManager implementation (Save/Load player data).
-- [ ] Player registration logic on first connect.
-- [ ] Tracking match stats (Kills, Deaths, Wins).
-- [ ] Ranking UI (fetching data from SQLite).
-- [ ] Docker + SQLite setup with migrations and backups.
+## Phase 3: Player Persistence & Database [🔄 IN PROGRESS]
+**Objetivo:** Implementar sistema de login, cadastro e persistência de dados dos jogadores
+
+### 3.1 - Sistema de Autenticação [✅ COMPLETED]
+- [x] Criar tela de Login/Cadastro
+- [x] DatabaseManager com JSON (pode migrar para SQLite depois)
+- [x] Sistema de hash de senhas (SHA256)
+- [x] Controle de sessões ativas (prevenir login duplo)
+- [x] Validação de dados (email, username único)
+- [x] Integração com NetworkManager
+- [x] Logout automático ao desconectar
+- [x] Stats base implementado (kills, deaths, wins, xp, level)
+
+### 3.2 - Persistência de Dados [✅ COMPLETED]
+- [x] Salvar/carregar dados dos jogadores (JSON)
+- [x] Tracking match stats (Kills, Deaths, Wins) - estrutura pronta
+- [x] Sistema de níveis e XP - implementado
+- [x] PlayerStatsManager para rastrear stats em tempo real
+- [x] HUD de stats do jogador (PlayerStatsHUD)
+- [x] Integração com GameManager para iniciar/finalizar partidas
+- [x] Salvar/carregar classe atual do jogador
+- [ ] Integrar stats com sistema de combate (quando combate for implementado)
+- [ ] Ranking UI (fetching data from JSON/SQLite)
+- [ ] Tela de perfil do jogador
+- [ ] Histórico de partidas
+
+### 3.3 - Infraestrutura (Opcional)
+- [ ] Docker + SQLite setup with migrations and backups
 
 ## Phase 4: Combat & Abilities System [📋 PLANNED]
 **Objetivo:** Implementar combate multiplayer com diferentes tipos de ataque por classe

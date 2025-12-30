@@ -12,7 +12,7 @@ config_version=5
 
 config/name="Twin Shooter Starting Kit"
 config/tags=PackedStringArray("starterkit")
-run/main_scene="res://scenes/main.tscn"
+run/main_scene="res://scenes/MainWithLogin.tscn"
 config/features=PackedStringArray("4.5")
 config/icon="res://project_icon.png"
 
@@ -22,6 +22,9 @@ DebugStats="*res://tools/debugging/DebugStats.tscn"
 DebugOverlay="*res://tools/debugging/DebugOverlay.tscn"
 BeehaveGlobalMetrics="*res://addons/beehave/metrics/beehave_global_metrics.gd"
 BeehaveGlobalDebugger="*res://addons/beehave/debug/global_debugger.gd"
+DatabaseManager="*res://database/DatabaseManager.gd"
+AuthManager="*res://database/AuthManager.gd"
+PlayerStatsManager="*res://database/PlayerStatsManager.gd"
 NetworkManager="*res://networking/NetworkManager.gd"
 DebugLogger="*res://networking/DebugLogger.gd"
 Dialogic="*res://addons/dialogic/Core/DialogicGameHandler.gd"

@@ -59,5 +59,129 @@
 - [ ] Sistema de combate ainda não implementado
 
 ### 📋 Próximos Passos
-Ver `Roadmap.md` - Phase 2.2: Aprimorar Sistema de Classes
+Ver `Roadmap.md` - Phase 3.2: Persistência de Dados
+
+---
+
+## [2024-12-29] - Sistema de Login, Cadastro e Autenticação
+
+### ✅ Implementado
+
+#### Sistema de Autenticação Completo
+- **DatabaseManager**: Gerenciamento de dados em JSON
+  - CRUD de jogadores (Create, Read, Update, Delete)
+  - Sistema de sessões ativas
+  - Persistência em `user://players_database.json`
+  - Controle de sessões em `user://active_sessions.json`
+  
+- **AuthManager**: Gerenciador de autenticação
+  - Hash de senhas com SHA256
+  - Validação de username (3-20 caracteres, apenas letras/números/_)
+  - Validação de senha (6-50 caracteres)
+  - Validação de email (opcional)
+  - Controle de login duplo (previne mesmo usuário em múltiplas sessões)
+  - Logout automático ao desconectar
+
+- **LoginScreen**: Tela de Login/Cadastro
+  - Interface com tabs (Login / Cadastro)
+  - Feedback visual de status (✅❌🔄)
+  - Validação em tempo real
+  - Suporte a Enter para submit
+  - Auto-login após registro
+
+- **MainWithLogin**: Gerenciador de fluxo
+  - Inicia no login
+  - Redireciona para multiplayer após autenticação
+  - Integração completa com NetworkManager
+
+#### Integração com Multiplayer
+- Username automaticamente usado como nome no jogo
+- Botão de logout no menu multiplayer
+- Logout automático ao desconectar
+- Informações do usuário persistidas
+
+#### Sistema de Stats (Base implementada)
+- Tracking de kills, deaths, wins, losses
+- Sistema de XP e níveis
+- Ranking de jogadores
+- Função `add_match_stats()` pronta para uso
+
+### 📁 Arquivos Criados
+- `database/DatabaseManager.gd` - Gerenciador de banco de dados
+- `database/AuthManager.gd` - Gerenciador de autenticação
+- `ui/LoginScreen.gd` - Script da tela de login
+- `ui/LoginScreen.tscn` - Cena da tela de login
+- `scenes/MainWithLogin.gd` - Gerenciador de fluxo
+- `scenes/MainWithLogin.tscn` - Cena principal com login
+
+### 📁 Arquivos Modificados
+- `project.godot` - Adicionados autoloads DatabaseManager e AuthManager
+- `project.godot` - MainScene alterado para MainWithLogin.tscn
+- `networking/MultiplayerMenu.gd` - Integração com sistema de auth
+- `networking/MultiplayerMenu.tscn` - Adicionado label de usuário e botão de logout
+- `networking/NetworkManager.gd` - Logout automático ao desconectar
+
+### 🔐 Recursos de Segurança
+- ✅ Hash de senhas (SHA256)
+- ✅ Prevenção de login duplo
+- ✅ Validação de dados de entrada
+- ✅ Sessões rastreáveis
+- ✅ Limpeza automática de sessões
+
+### 🎮 Como Usar
+
+1. **Primeiro Acesso:**
+   - Execute o jogo
+   - Clique na aba "Cadastro"
+   - Preencha: Username, Email (opcional), Senha
+   - Clique em "✨ CRIAR CONTA"
+   - Faça login com as credenciais criadas
+
+2. **Login:**
+   - Digite seu username e senha
+   - Clique em "🔐 ENTRAR"
+   - Você será redirecionado para o menu multiplayer
+
+3. **Multiplayer:**
+   - Seu username aparece no topo do menu
+   - Use "Host" ou "Join" normalmente
+   - Use "Logout" para sair
+
+### 📊 Estrutura de Dados
+
+**players_database.json:**
+```json
+{
+  "username": {
+    "username": "player1",
+    "password_hash": "sha256_hash",
+    "email": "player1@example.com",
+    "created_at": "2024-12-29 10:30:00",
+    "last_login": "2024-12-29 12:00:00",
+    "level": 5,
+    "xp": 2500,
+    "kills": 50,
+    "deaths": 30,
+    "wins": 10,
+    "losses": 5,
+    "matches_played": 15
+  }
+}
+```
+
+**active_sessions.json:**
+```json
+{
+  "username": peer_id
+}
+```
+
+### 🐛 Problemas Conhecidos
+- [ ] SHA256 não é ideal para produção (considerar bcrypt)
+- [ ] JSON não é ideal para produção (migrar para SQLite)
+- [ ] Sem recuperação de senha
+- [ ] Sem verificação de email
+
+### 📋 Próximos Passos
+Ver `Roadmap.md` - Phase 3.2: Persistência de Dados
 
