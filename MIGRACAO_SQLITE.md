@@ -1,20 +1,17 @@
-# 🔄 Migração para SQLite - Guia Completo
+# SQLite - Setup e Uso
 
-## ✅ O Que Foi Criado
+## ✅ Status: COMPLETO E ATIVO
 
-### 📁 Estrutura de Pastas
+Plugin instalado, banco criado, 4 usuários de teste prontos.
+
+## Estrutura
 ```
 database/
-├── db/                          # Banco de dados SQLite
-│   ├── game.db                  # (será criado automaticamente)
-│   └── README.md
-├── migrations/                  # Migrations SQL
-│   └── 001_initial_schema.sql  # Schema inicial
-├── DatabaseManager.gd           # Versão antiga (JSON)
-├── DatabaseManagerSQLite.gd     # Nova versão (SQLite)
-├── AuthManager.gd
-├── PlayerStatsManager.gd
-└── SQLITE_SETUP.md             # Guia de setup
+├── db/game.db                   # Banco SQLite (57 KB)
+├── migrations/001_initial_schema.sql
+├── DatabaseManager.gd           # Usando SQLite
+├── MigrationTool.gd             # Migra JSON → SQLite
+└── Scripts Python (create_database.py, insert_test_data.py)
 ```
 
 ### 📊 Tabelas Criadas
@@ -200,8 +197,10 @@ Após ativar o SQLite:
 
 ---
 
-**Dúvidas? Verifique:**
-- `database/SQLITE_SETUP.md`
-- `database/db/README.md`
-- Console do Godot para erros
+## Usuários de Teste
+Todos com senha: `password`
+- admin (Level 10, 4500 XP)
+- jogador1 (Level 5, 2100 XP)  
+- jogador2 (Level 3, 1200 XP)
+- teste (Level 1, 0 XP)
 

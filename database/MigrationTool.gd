@@ -19,7 +19,7 @@ func _ready():
 	print("="*60 + "\n")
 
 func start_migration() -> Dictionary:
-	"""Inicia o processo de migracao"""
+	# Inicia o processo de migracao
 	migration_log.clear()
 	players_migrated = 0
 	sessions_migrated = 0
@@ -72,7 +72,7 @@ func start_migration() -> Dictionary:
 	}
 
 func _migrate_players() -> Dictionary:
-	"""Migra dados dos jogadores"""
+	# Migra dados dos jogadores
 	_log("\n[1/2] Migrando jogadores...")
 	
 	# Ler arquivo JSON
@@ -157,7 +157,7 @@ func _migrate_players() -> Dictionary:
 	return {"success": true}
 
 func _migrate_sessions() -> Dictionary:
-	"""Migra sessoes ativas (opcional)"""
+	# Migra sessoes ativas (opcional)
 	_log("\n[2/2] Migrando sessoes ativas...")
 	
 	if not FileAccess.file_exists(JSON_SESSIONS_PATH):
@@ -207,7 +207,7 @@ func _migrate_sessions() -> Dictionary:
 	return {"success": true}
 
 func _log(message: String, is_error: bool = false):
-	"""Adiciona mensagem ao log"""
+	# Adiciona mensagem ao log
 	var prefix = "[ERROR] " if is_error else ""
 	var full_message = prefix + message
 	migration_log.append(full_message)
@@ -218,7 +218,7 @@ func _log(message: String, is_error: bool = false):
 		print(full_message)
 
 func print_summary():
-	"""Imprime resumo da migracao"""
+	# Imprime resumo da migracao
 	print("\n" + "="*60)
 	print("RESUMO DA MIGRACAO")
 	print("="*60)
@@ -229,14 +229,14 @@ func print_summary():
 # ==================== UTILITY FUNCTIONS ====================
 
 func get_json_paths() -> Dictionary:
-	"""Retorna os caminhos dos arquivos JSON"""
+	# Retorna os caminhos dos arquivos JSON
 	return {
 		"players": ProjectSettings.globalize_path(JSON_PLAYERS_PATH),
 		"sessions": ProjectSettings.globalize_path(JSON_SESSIONS_PATH)
 	}
 
 func backup_json_files() -> bool:
-	"""Cria backup dos arquivos JSON antes da migracao"""
+	# Cria backup dos arquivos JSON antes da migracao
 	_log("\nCriando backup dos arquivos JSON...")
 	
 	var backup_dir = "user://backup_json_" + Time.get_datetime_string_from_system().replace(":", "-")
@@ -262,7 +262,7 @@ func backup_json_files() -> bool:
 	return true
 
 func verify_migration() -> Dictionary:
-	"""Verifica se a migracao foi bem sucedida"""
+	# Verifica se a migracao foi bem sucedida
 	_log("\nVerificando migracao...")
 	
 	var json_count = _count_json_players()
@@ -285,7 +285,7 @@ func verify_migration() -> Dictionary:
 	}
 
 func _count_json_players() -> int:
-	"""Conta jogadores no JSON"""
+	# Conta jogadores no JSON
 	if not FileAccess.file_exists(JSON_PLAYERS_PATH):
 		return 0
 	
@@ -303,7 +303,7 @@ func _count_json_players() -> int:
 	return 0
 
 func _count_db_players() -> int:
-	"""Conta jogadores no SQLite"""
+	# Conta jogadores no SQLite
 	if not DatabaseManager or not DatabaseManager.db_ready:
 		return 0
 	

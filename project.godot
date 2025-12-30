@@ -22,17 +22,23 @@ DebugStats="*res://tools/debugging/DebugStats.tscn"
 DebugOverlay="*res://tools/debugging/DebugOverlay.tscn"
 BeehaveGlobalMetrics="*res://addons/beehave/metrics/beehave_global_metrics.gd"
 BeehaveGlobalDebugger="*res://addons/beehave/debug/global_debugger.gd"
+NetworkManager="*res://networking/NetworkManager.gd"
+DebugLogger="*res://networking/DebugLogger.gd"
 DatabaseManager="*res://database/DatabaseManager.gd"
 AuthManager="*res://database/AuthManager.gd"
 PlayerStatsManager="*res://database/PlayerStatsManager.gd"
-NetworkManager="*res://networking/NetworkManager.gd"
-DebugLogger="*res://networking/DebugLogger.gd"
 Dialogic="*res://addons/dialogic/Core/DialogicGameHandler.gd"
 
 [dialogic]
 
-directories/dch_directory={}
-directories/dtl_directory={}
+directories/dch_directory={
+"dr_megadroon_character": "res://characters/NPC/dr_megadroon_character.dch"
+}
+directories/dtl_directory={
+"dr_megadroon": "res://characters/NPC/dr_megadroon.dtl",
+"level1_drmegadroon": "res://scenes/level1/level1_drmegadroon.dtl",
+"level1_intro": "res://scenes/level1/level1_intro.dtl"
+}
 glossary/default_case_sensitive=true
 layout/style_list=["res://ui/dialogic_style/dialog_style.tres"]
 layout/default_style="res://ui/dialogic_style/dialog_style.tres"
@@ -69,7 +75,7 @@ window/size/window_height_override=540
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/beehave/plugin.cfg", "res://addons/dialogic/plugin.cfg")
+enabled=PackedStringArray("res://addons/beehave/plugin.cfg", "res://addons/dialogic/plugin.cfg", "res://addons/godot-sqlite/plugin.cfg")
 
 [file_customization]
 

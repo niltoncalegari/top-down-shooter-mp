@@ -1,10 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://main_with_login_uid"]
+[gd_scene load_steps=3 format=3 uid="uid://bqoorbow5i3r3"]
 
-[ext_resource type="Script" path="res://scenes/MainWithLogin.gd" id="1"]
-[ext_resource type="PackedScene" uid="uid://login_screen_uid" path="res://ui/LoginScreen.tscn" id="2"]
+[ext_resource type="Script" uid="uid://chtdypf4lj1cv" path="res://scenes/MainWithLogin.gd" id="1"]
+[ext_resource type="PackedScene" path="res://ui/LoginScreen.tscn" id="2"]
 
 [node name="MainWithLogin" type="Node"]
 script = ExtResource("1")
 
 [node name="LoginScreen" parent="." instance=ExtResource("2")]
-
