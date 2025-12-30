@@ -11,6 +11,10 @@
 script = ExtResource("1_3c0uv")
 player_packed_scene = ExtResource("2")
 
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://characters/player/PlayerEntity.tscn")
+spawn_path = NodePath("..")
+
 [node name="MultiplayerMenu" parent="." instance=ExtResource("14_ysf7g")]
 
 [node name="ControllerMenu" parent="." instance=ExtResource("13_ysf7g")]

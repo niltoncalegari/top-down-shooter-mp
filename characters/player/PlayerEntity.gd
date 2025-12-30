@@ -20,23 +20,22 @@ extends CharacterBody3D
 
 signal is_dead
 
-func _ready():
+# CRÍTICO: Configurar autoridade ANTES de _ready() para garantir sincronização
+func _enter_tree():
 	# MULTIPLAYER: Configurar autoridade baseada no nome (ID do peer)
 	if name.is_valid_int():
-		set_multiplayer_authority(name.to_int())
-	
-	# Aguardar um frame para garantir que todos os nós filhos foram carregados
-	await get_tree().process_frame
-	
-	# Configurar autoridade do sincronizador
-	var sync = get_node_or_null("MultiplayerSynchronizer")
-	if sync:
-		sync.set_multiplayer_authority(get_multiplayer_authority())
-		# CRÍTICO: Sincronizar o mais rápido possível (0 = cada frame)
-		sync.delta_interval = 0.0
-		print("Sincronizador configurado | Player: ", name, " | Authority: ", sync.get_multiplayer_authority())
-	else:
-		push_error("ERRO: MultiplayerSynchronizer não encontrado no player ", name)
+		var authority_id = name.to_int()
+		set_multiplayer_authority(authority_id)
+
+func _ready():
+	print("\n╔═══════════════════════════════════════")
+	print("║ PlayerEntity._ready() iniciado")
+	print("║ Nome: ", name)
+	print("║ Meu peer ID: ", multiplayer.get_unique_id())
+	print("║ Autoridade: ", get_multiplayer_authority())
+	print("║ É meu?: ", is_multiplayer_authority())
+	print("║ Sou servidor?: ", multiplayer.is_server())
+	print("╚═══════════════════════════════════════")
 	
 	# Garantir que o AnimationTree está ativo para TODOS os players
 	if anim_tree:
@@ -54,11 +53,15 @@ func _ready():
 		if camera_pivot:
 			camera_pivot.visible = false
 		
-		print("✓ Player REMOTO ", name, " configurado para receber sincronização")
+		print("  ✓ Player REMOTO ", name, " configurado para RECEBER sincronização")
+		print("    Posição inicial: ", global_position)
+		print("╚═══════════════════════════════════════\n")
 		return
 	
 	# Se FOR o dono (jogador local):
-	print("✓ Player LOCAL ", name, " configurado para enviar sincronização")
+	print("  ✓ Player LOCAL ", name, " configurado para ENVIAR sincronização")
+	print("    Posição inicial: ", global_position)
+	print("╚═══════════════════════════════════════\n")
 	
 	# Ativar câmera local
 	if camera:
@@ -95,7 +98,7 @@ func _process(delta):
 func _physics_process(_delta):
 	# Para players REMOTOS: aplicar os valores sincronizados
 	if not is_multiplayer_authority():
-		# O MultiplayerSynchronizer já atualizou position, rotation e velocity
+		# O MultiplayerSynchronizer já atualizou global_position, rotation e velocity
 		# Agora precisamos aplicar o movimento para mover o CharacterBody3D
 		move_and_slide()
 	# Para o player LOCAL: o controller já chama move_and_slide()

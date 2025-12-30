@@ -43,29 +43,15 @@ func _find_game_elements():
 func _on_player_connected(peer_id, player_info_dict):
 	print("========================================")
 	print("Player connected: ID=", peer_id, " | Is Server: ", multiplayer.is_server())
+	print("My ID: ", multiplayer.get_unique_id())
 	print("========================================")
 	
-	# Se for o servidor, spawnar o jogador
-	if multiplayer.is_server():
-		print("Servidor: Spawnando player ", peer_id)
-		_spawn_player(peer_id)
-		
-		# Enviar jogadores existentes para o novo client
-		if peer_id != 1:
-			# Aguardar para garantir que o player foi criado
-			await get_tree().create_timer(0.2).timeout
-			
-			print("Servidor: Enviando players existentes para client ", peer_id)
-			var sent_count = 0
-			for child in get_children():
-				if child is PlayerEntity:
-					var existing_id = child.name.to_int()
-					if existing_id != peer_id and existing_id > 0:
-						sent_count += 1
-						print("  -> Enviando player ", existing_id, " | Pos: ", child.global_position)
-						_create_player.rpc_id(peer_id, existing_id, child.global_position)
-			
-			print("Total de ", sent_count, " players existentes enviados")
+	# Apenas o servidor spawna players
+	if not multiplayer.is_server():
+		return
+	
+	print("Servidor: Spawnando player ", peer_id)
+	_spawn_player(peer_id)
 
 func _on_player_disconnected(peer_id):
 	print("Player disconnected: ", peer_id)
@@ -76,6 +62,11 @@ func _on_player_disconnected(peer_id):
 var spawn_point_index = 0
 
 func _spawn_player(id: int):
+	# Verificar se já existe
+	if has_node(str(id)):
+		print("  ⚠️ AVISO: Player ", id, " já existe! Pulando.")
+		return
+	
 	var spawn_pos = Vector3.ZERO
 	if level:
 		var spawn_point_name = "SpawnPoint" + str(spawn_point_index + 1)
@@ -92,40 +83,13 @@ func _spawn_player(id: int):
 		
 		spawn_point_index += 1
 	
-	_create_player.rpc(id, spawn_pos)
-
-@rpc("authority", "call_local", "reliable")
-func _create_player(id: int, pos: Vector3):
-	print("━━━ _create_player RPC ━━━")
-	print("  Target ID: ", id)
-	print("  Position: ", pos)
-	print("  Sender: ", multiplayer.get_remote_sender_id())
-	print("  Local ID: ", multiplayer.get_unique_id())
-	print("  Is Server: ", multiplayer.is_server())
-	
-	# Verificar se já existe
-	if has_node(str(id)):
-		print("  ⚠️ AVISO: Player ", id, " já existe! Pulando.")
-		return
-	
-	print("  ➜ Instanciando player...")
+	print("  ➜ Instanciando player ", id, " em ", spawn_pos)
 	var p = player_packed_scene.instantiate()
 	p.name = str(id)
-	p.set_multiplayer_authority(id)
-	p.global_position = pos
+	p.position = spawn_pos
 	
-	print("  ➜ Adicionando à árvore...")
-	add_child(p, true)  # force_readable_name = true
-	
-	# Aguardar para garantir que tudo foi inicializado
-	await get_tree().process_frame
-	
-	# Verificar sincronizador
-	var sync = p.get_node_or_null("MultiplayerSynchronizer")
-	if sync:
-		print("  ✓ Sincronizador OK | Authority: ", sync.get_multiplayer_authority())
-	else:
-		print("  ❌ Sincronizador FALTANDO!")
+	# Usar call_deferred para adicionar o player (importante para sincronização)
+	call_deferred("add_child", p, true)
 	
 	# Se for o jogador local, salvar referência
 	if id == multiplayer.get_unique_id():
@@ -133,8 +97,6 @@ func _create_player(id: int, pos: Vector3):
 		print("  ✓✓✓ PLAYER LOCAL CRIADO")
 	else:
 		print("  ✓✓✓ PLAYER REMOTO CRIADO")
-	
-	print("━━━━━━━━━━━━━━━━━━━━━━━")
 
 func initialise_player():
 	pass  # Will be implemented when needed

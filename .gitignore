@@ -24,3 +24,6 @@ mono_crash.*.json
 *~
 *.blend1
 *.tmp
+
+# Example files (not needed in repo)
+high_level_example/
